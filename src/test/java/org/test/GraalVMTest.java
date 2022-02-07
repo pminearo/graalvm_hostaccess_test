@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.foo.bar.JavaScriptAnnotationPredicate;
+import org.foo.bar.JsClass;
+import org.foo.bar.JsFunction;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.PolyglotException;
@@ -345,4 +347,65 @@ public class GraalVMTest {
         }
 
     }
+
+    // *************************************
+    // *************************************
+    // * Build HostAccess with Annotations *
+    // *************************************
+    // *************************************
+
+    @Test
+    public void testBuildHostAccessWithAnnotations() {
+
+        // ****************************************************************************
+        // This test will fail because: 'Java is not defined'
+        // ****************************************************************************
+
+        final HostAccess hostAccess = HostAccess
+                .newBuilder(HostAccess.EXPLICIT)
+                .allowAccessAnnotatedBy(JsClass.class)
+                .allowAccessAnnotatedBy(JsFunction.class)
+                .build();
+
+        final Context context = Context
+                .newBuilder()
+                .allowHostAccess(hostAccess)
+                .build();
+
+        try {
+            context.eval(LANGUAGE_ID, script);
+            fail(FAIL_MESSAGE);
+        } catch (final PolyglotException pge) {
+            assertEquals(EXPECTED, pge.getMessage());
+        }
+
+    }
+
+    @Test
+    public void testBuildHostAccessWithAnnotationsLegacy()  {
+
+        // ****************************************************************************
+        // This test will fail because: 'Java is not defined'
+        // ****************************************************************************
+
+        final HostAccess hostAccess = HostAccess
+                .newBuilder(HostAccess.EXPLICIT)
+                .allowAccessAnnotatedBy(JsClass.class)
+                .allowAccessAnnotatedBy(JsFunction.class)
+                .build();
+
+        final Context context = Context
+                .newBuilder()
+                .allowHostAccess(hostAccess)
+                .build();
+
+        try {
+            context.eval(LANGUAGE_ID, legacyScript);
+            fail(FAIL_MESSAGE);
+        } catch (final PolyglotException pge) {
+            assertEquals(EXPECTED, pge.getMessage());
+        }
+
+    }
+
 }
